@@ -21,8 +21,8 @@ A modern, Dockerized Laravel 12 REST API for managing professors and their cours
 ### 1. Clone & Configure
 
 ```bash
-git clone <your-repo-url>
-cd <your-repo-folder>
+git clone https://github.com/repocent-del/university-api
+cd university-api
 cp .env.example .env
 
 # Edit .env for DB and app configuration if needed
