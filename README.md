@@ -1,61 +1,140 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Professors & Courses REST API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A modern, Dockerized Laravel 12 REST API for managing professors and their courses. Built with professional best practices, authentication, API resources, testing, seeders, and consistent error handling.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🚀 Technologies Used
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+-   **Laravel 12**
+-   **PHP 8.4**
+-   **MySQL 8**
+-   **Docker & Docker Compose**
+-   **Laravel Sanctum** (API authentication)
+-   **PHPUnit** (Feature tests)
+-   **Factories & Seeders**
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## ⚡️ Getting Started
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 1. Clone & Configure
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+```bash
+git clone <your-repo-url>
+cd <your-repo-folder>
+cp .env.example .env
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+# Edit .env for DB and app configuration if needed
+```
 
-## Laravel Sponsors
+### 2. Start Service
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+docker-compose up -d --build
+```
 
-### Premium Partners
+### 3. Install Composer Dependencies & App Key
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+docker-compose run --rm app composer install
+docker-compose run --rm app php artisan key:generate
+```
 
-## Contributing
+### 4. Run Migrations and Seeders
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+docker-compose run --rm app php artisan migrate --seed
+```
 
-## Code of Conduct
+### Database Seeding
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+docker-compose run --rm app php artisan db:seed
+```
 
-## Security Vulnerabilities
+### Authentication Workflow
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+-   Register: POST `/api/v1/register`
 
-## License
+-   Login: POST `/api/v1/login`
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+-   On success, receive a Bearer token.
+
+-   Logout: POST `/api/v1/logout` (token required)
+
+All Professor and Course endpoints require authentication via Bearer token.
+
+### API Endpoints
+
+| Method | Endpoint                  | Description            | Auth Required |
+| ------ | ------------------------- | ---------------------- | ------------- |
+| POST   | `/api/v1/register`        | Register new user      | No            |
+| POST   | `/api/v1/login`           | Login and get token    | No            |
+| POST   | `/api/v1/logout`          | Logout current user    | Yes           |
+| GET    | `/api/v1/courses`         | List all courses       | Yes           |
+| GET    | `/api/v1/courses/{id}`    | Get a course by ID     | Yes           |
+| POST   | `/api/v1/courses`         | Create a new course    | Yes           |
+| PUT    | `/api/v1/courses/{id}`    | Update a course        | Yes           |
+| DELETE | `/api/v1/courses/{id}`    | Delete a course        | Yes           |
+| GET    | `/api/v1/professors`      | List all professors    | Yes           |
+| GET    | `/api/v1/professors/{id}` | Get a professor by ID  | Yes           |
+| POST   | `/api/v1/professors`      | Create a new professor | Yes           |
+| PUT    | `/api/v1/professors/{id}` | Update a professor     | Yes           |
+| DELETE | `/api/v1/professors/{id}` | Delete a professor     | Yes           |
+
+### cURL Examples
+
+**Register**
+
+```bash
+curl -X POST http://localhost:8000/api/v1/register \
+  -H "Accept: application/json" \
+  -d "name=John Doe" \
+  -d "email=john@example.com" \
+  -d "password=secret123" \
+  -d "password_confirmation=secret123"
+```
+
+**Login**
+
+```bash
+curl -X GET http://localhost:8000/api/v1/courses \
+  -H "Authorization: Bearer <YOUR_TOKEN>" \
+  -H "Accept: application/json"
+```
+
+**Create a Professor**
+
+```bash
+curl -X POST http://localhost:8000/api/v1/professors \
+  -H "Authorization: Bearer <YOUR_TOKEN>" \
+  -H "Accept: application/json" \
+  -d "firstname=Alice" \
+  -d "lastname=Smith" \
+  -d "degree=PhD" \
+  -d "join_at=2022-01-01" \
+  -d "email=alice@example.com" \
+  -d "address=123 Main St" \
+  -d "phone=5551234"
+```
+
+### Running Tests
+
+```bash
+docker-compose run --rm app php artisan test
+```
+
+### Project Structure
+
+-   app/Models - Eloquent models
+
+-   app/Http/Controllers/Api/V1 - API controllers
+
+-   database/factories - Model factories
+
+-   database/seeders - Seeder classes
+
+-   tests/Feature/Api/V1 - Feature/API tests
+
+-   routes/api.php - API routes
